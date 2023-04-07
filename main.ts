@@ -10,7 +10,7 @@ renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
 
-camera.position.z = 0;
+camera.position.z = 100;
 
 const loader = new GLTFLoader();
 let mixer;
@@ -26,7 +26,7 @@ loader.load( 'models/mrkrabs/scene.gltf', function ( gltf ) {
     takeAction.play();
 
     model.position.setX(0);
-    model.position.setY(-200);
+    model.position.setY(-400);
     model.position.setZ(-750);
 
 	scene.add( gltf.scene );
@@ -56,8 +56,8 @@ function onWindowResize() {
     render()
 }
 
-let direction = "right";
-let horizontalPos = -60;
+let rotationDirection = "right";
+let positionX = 0;
 
 // create an AudioListener and add it to the camera
 const listener = new THREE.AudioListener();
@@ -66,7 +66,7 @@ camera.add( listener );
 // create a global audio source
 const sound = new THREE.Audio( listener );
 
-// load a sound and set it as the Audio object's buffer
+// Song
 const audioLoader = new THREE.AudioLoader();
 audioLoader.load( 'audio/out_of_your_mind.mp3', function( buffer ) {
 	sound.setBuffer( buffer );
@@ -75,32 +75,56 @@ audioLoader.load( 'audio/out_of_your_mind.mp3', function( buffer ) {
 	sound.play();
 });
 
+// Keydown controls
+function setupKeyControls() {
+    // var krabs = scene.getObjects();
+    document.onkeydown = function(e) {
+        switch(e.keyCode) {
+            case 38: // Up Arrow Key
+                break;
+            case 40: // Down Arrow Key
+                break;
+            case 37: // Left Arrow Key
+                if (positionX > -500) {
+                    positionX -= 10;
+                    model.position.setX(positionX);
+                }
+                break
+            case 39: // Right Arrow Key
+                if (positionX < 500) {
+                    positionX += 10;
+                    model.position.setX(positionX);
+                }
+                break;
+        }
+    }
+}
+
 function animate() {
 	requestAnimationFrame( animate );
     
     if (model) {
-        model.position.setX(horizontalPos);
+        if (model.rotation.y >= 0.5) {
+            rotationDirection = "left";
+        }
+        else if (model.rotation.y <= -0.5) {
+            rotationDirection = "right";
+        }
 
-        if (direction == "right") {
-            horizontalPos+=1;
-            model.rotation.y += 0.02;
+        if (rotationDirection == "right") {
+            model.rotation.y += 0.015;
         }
         else {
-            horizontalPos-=1;
-            model.rotation.y -= 0.01;
+            model.rotation.y -= 0.015;
         }
-    }
-
-    if (horizontalPos == 60) {
-        direction = "left";
-    }
-    else if (horizontalPos == -60) {
-        direction = "right";
+        
     }
 
     if (mixer) {
         mixer.update(clock.getDelta());
     }
+
+    setupKeyControls();
 
 	render();
 }
