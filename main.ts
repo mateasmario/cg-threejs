@@ -1,17 +1,28 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
+// Scene
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xffddcc);
+
+//Load Background Texture
+const textureLoader = new THREE.TextureLoader();
+textureLoader.load('background/krusty.jpg' , function(texture)
+            {
+             scene.background = texture;  
+            });
+
+// Camera
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
+// Renderer
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
-
+// Set camera position
 camera.position.z = 100;
 
+// Load Mr. Krabs
 const loader = new GLTFLoader();
 let mixer;
 let model;
@@ -37,7 +48,7 @@ loader.load( 'models/mrkrabs/scene.gltf', function ( gltf ) {
 
 } );
 
-
+// Lighting
 const light = new THREE.DirectionalLight( 0xffffff, 3.5 ); // soft white light
 
 light.position.setX(0);
@@ -45,9 +56,11 @@ light.position.setY(100);
 light.position.setZ(1000);
 scene.add( light );
 
+// Clock
 const clock = new THREE.Clock()
 
 
+// Resize Window Event Listener
 window.addEventListener('resize', onWindowResize, false)
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight
@@ -59,14 +72,12 @@ function onWindowResize() {
 let rotationDirection = "right";
 let positionX = 0;
 
-// create an AudioListener and add it to the camera
+// Audio Setup
 const listener = new THREE.AudioListener();
 camera.add( listener );
 
-// create a global audio source
 const sound = new THREE.Audio( listener );
 
-// Song
 const audioLoader = new THREE.AudioLoader();
 audioLoader.load( 'audio/out_of_your_mind.mp3', function( buffer ) {
 	sound.setBuffer( buffer );
@@ -75,9 +86,8 @@ audioLoader.load( 'audio/out_of_your_mind.mp3', function( buffer ) {
 	sound.play();
 });
 
-// Keydown controls
+// Keydown Controls
 function setupKeyControls() {
-    // var krabs = scene.getObjects();
     document.onkeydown = function(e) {
         switch(e.keyCode) {
             case 38: // Up Arrow Key
@@ -100,6 +110,7 @@ function setupKeyControls() {
     }
 }
 
+// Animate Function
 function animate() {
 	requestAnimationFrame( animate );
     
@@ -129,8 +140,10 @@ function animate() {
 	render();
 }
 
+// Render Function
 function render() {
     renderer.render(scene, camera)
 }
 
+// Animate Function Call
 animate();
