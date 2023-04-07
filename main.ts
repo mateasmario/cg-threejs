@@ -14,9 +14,10 @@ camera.position.z = 0;
 
 const loader = new GLTFLoader();
 let mixer;
+let model;
 
 loader.load( 'models/mrkrabs/scene.gltf', function ( gltf ) {
-    const model = gltf.scene;
+    model = gltf.scene;
     const clips = gltf.animations;
 
     mixer = new THREE.AnimationMixer(model);
@@ -37,7 +38,7 @@ loader.load( 'models/mrkrabs/scene.gltf', function ( gltf ) {
 } );
 
 
-const light = new THREE.DirectionalLight( 0xffffff, 3 ); // soft white light
+const light = new THREE.DirectionalLight( 0xffffff, 3.5 ); // soft white light
 
 light.position.setX(0);
 light.position.setY(100);
@@ -55,8 +56,47 @@ function onWindowResize() {
     render()
 }
 
+let direction = "right";
+let horizontalPos = -60;
+
+// create an AudioListener and add it to the camera
+const listener = new THREE.AudioListener();
+camera.add( listener );
+
+// create a global audio source
+const sound = new THREE.Audio( listener );
+
+// load a sound and set it as the Audio object's buffer
+const audioLoader = new THREE.AudioLoader();
+audioLoader.load( 'audio/out_of_your_mind.mp3', function( buffer ) {
+	sound.setBuffer( buffer );
+	sound.setLoop( true );
+	sound.setVolume( 0.5 );
+	sound.play();
+});
+
 function animate() {
 	requestAnimationFrame( animate );
+    
+    if (model) {
+        model.position.setX(horizontalPos);
+
+        if (direction == "right") {
+            horizontalPos+=1;
+            model.rotation.y += 0.02;
+        }
+        else {
+            horizontalPos-=1;
+            model.rotation.y -= 0.01;
+        }
+    }
+
+    if (horizontalPos == 60) {
+        direction = "left";
+    }
+    else if (horizontalPos == -60) {
+        direction = "right";
+    }
 
     if (mixer) {
         mixer.update(clock.getDelta());
