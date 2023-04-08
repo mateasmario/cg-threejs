@@ -79,7 +79,7 @@ camera.add( listener );
 const sound = new THREE.Audio( listener );
 
 const audioLoader = new THREE.AudioLoader();
-audioLoader.load( 'audio/out_of_your_mind.mp3', function( buffer ) {
+audioLoader.load( 'audio/krab.mp3', function( buffer ) {
 	sound.setBuffer( buffer );
 	sound.setLoop( true );
 	sound.setVolume( 0.5 );
